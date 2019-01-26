@@ -20,11 +20,12 @@ class SpiderSpider(scrapy.Spider):
             yield scrapy.Request(url=next_page_url)
 
     def individual_page(self, response):
-        base_price = response.xpath('//span[@class="am_old_price"]/text()').re_first('(\d+\,\d+) €')
-        discounted_price = response.xpath('//p[@class="our_price_display"]/span[@class="price"]/@content').extract_first()
-        product_name = response.xpath('//h1[@class="am_marque_title "]/text()').extract_first().strip()
-        category = response.xpath('//span[@class="navigation_page"]/span/a/@title').extract_first()
-
-        fields = dict(base_price=base_price, discounted_price=discounted_price, product_name=product_name, category=category)
+        fields = dict()
+        fields["base_price"] = response.xpath('//span[@class="am_old_price"]/text()').re_first('(\d+\,\d+) €')
+        fields["discounted_price"] = response.xpath('//p[@class="our_price_display"]/span[@class="price"]/@content').extract_first()
+        fields["product_name"] = response.xpath('//h1[@class="am_marque_title "]/text()').extract_first().strip()
+        fields["category"] = response.xpath('//span[@class="navigation_page"]/span/a/@title').extract_first()
+        fields["brand"] = response.xpath('//div[@class="am_product_marque"]/a/span/text()').extract_first()
+        fields["description"] = response.xpath('//div[@id="short_description_content"]//text()').extract_first()
 
         yield fields
